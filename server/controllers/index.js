@@ -1,56 +1,38 @@
 var models = require('../models');
-var connection = require('../db/index.js');
-var handleQuery = (connection.connection.handleQuery);
+var messages = models.messages;
+var users = models.users;
 //connection.connection.connect();
-
+console.log(messages);
 module.exports = {
   messages: {
     get: function (req, res) {
-      //console.log(req.body, 'get message');
-      handleQuery('SELECT * FROM messages', '', function(err, result) {
-        if (err) {
-          console.log(err, result); 
-        } else {
-          res.end(JSON.stringify(result)); 
-        }
-      });
+      messages.get(req, res);
+      
     }, // a function which handles a get request for all messages
     post: function (req, res) {
-      var post = {id: null, username: req.body.username, message: req.body.message, roomname: req.body.roomname};
-      handleQuery('INSERT INTO messages SET ?', post, function(err, result) {
-        //console.log('hey', err, result);
-        if (err) {
-          console.log(err, result); 
-        } else {
-          res.end();
-        }
-      });
+      if (!req.body.message || !req.body.username) {
+        res.writeHead(404, 'Not found');
+        res.end();
+      } else {
+        messages.post(req, res);
+      }
     } // a function which handles posting a message to the database
   },
 
   users: {
     // Ditto as above
     get: function (req, res) {
-      console.log(req.body, 'get user');
-      handleQuery('SELECT * FROM users', '', function(err, result) {
-        if (err) {
-          console.log(err, result); 
-        } else {
-          console.log('GETTING USER', result);
-          res.end(JSON.stringify(result)); 
-        }
-      });
+      users.get(req, res);
+
     },
     post: function (req, res) {
-      var post = {id: null, username: req.body.username};
-      handleQuery('INSERT INTO users SET ?', post, function(err, result) {
-        if (err) {
-          console.log(err, result); 
-        } else {
-          res.end(); 
-        }
-      });
-    }
+      if (!req.body.username) {
+        res.writeHead(404, 'Not found');
+        res.end();
+      } else {
+        users.post(req, res);
+      }
+    } // a functio
   }
 };
 
